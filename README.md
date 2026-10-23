@@ -33,9 +33,20 @@ The repository is being developed as a portfolio project. **All example values a
 - Python 3.12 or a compatible recent Python 3 version.
 - The current calculation modules and unit tests use only the Python standard library.
 
-## Run the Interactive Toolkit
+## Launch the Interactive Dashboard
 
-From the repository root, run:
+Install the dashboard dependencies and start the web interface from the repository root:
+
+```bash
+python -m pip install -r requirements.txt
+python -m streamlit run app.py
+```
+
+The dashboard runs locally in your browser. It includes editable subsystem loads, interactive solar-array and battery inputs, energy-balance charts, and a CSV summary download. See the [official Streamlit installation guide](https://docs.streamlit.io/get-started/installation) for environment setup.
+
+## Run the Terminal Toolkit
+
+The lightweight terminal menu is also available:
 
 ```bash
 python -m src.main
