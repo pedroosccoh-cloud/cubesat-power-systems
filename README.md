@@ -33,15 +33,21 @@ The repository is being developed as a portfolio project. **All example values a
 - Python 3.12 or a compatible recent Python 3 version.
 - The current calculation modules and unit tests use only the Python standard library.
 
-## Run the Power Budget Calculator
+## Run the Interactive Toolkit
 
-From the repository root:
+From the repository root, run:
 
 ```bash
-python -m src.power_budget
+python -m src.main
 ```
 
-The interactive calculator asks for each subsystem's power in watts and operating time in hours.
+A menu lets you choose between three interactive tools:
+
+1. **Power budget:** register subsystems, their power consumption, and operating time to calculate total listed power and energy use.
+2. **Solar-array estimate:** enter active cell area, irradiance, conversion efficiency, degradation, and sunlight duration to estimate power and energy.
+3. **Battery state of charge:** enter initial SOC, capacity, charging energy, energy consumed, and charging efficiency to estimate final SOC.
+
+The original power-budget-only interface is also available with `python -m src.power_budget`. All inputs are illustrative assumptions, not real mission specifications.
 
 ## Run the Tests
 
