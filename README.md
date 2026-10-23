@@ -1,4 +1,4 @@
-# CubeSat Power Systems
+## CubeSat Power Systems
 
 An educational engineering project focused on modeling and analyzing electrical power systems for CubeSat-class spacecraft.
 
