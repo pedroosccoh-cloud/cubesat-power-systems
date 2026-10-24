@@ -1,20 +1,20 @@
 # CubeSat Power Systems
 
-I built this project to explore a practical spacecraft engineering question: how much energy do the onboard systems use, and can the solar array and battery keep up?
+How do you know whether a small satellite can generate enough electricity to run its onboard systems?
 
-The project is an educational calculator for CubeSat-style electrical power systems. It includes both a terminal menu and a small interactive dashboard, so you can change the assumptions and see how the estimates respond.
+That's the question I'm exploring with this project. I wanted to build something practical that connects programming with spacecraft engineering, so I put together a simple power-budget calculator for a CubeSat-style mission. You can use it from the terminal or through an interactive Streamlit dashboard.
 
-**Please note:** the numbers entered in examples are illustrative. This is a learning project, not a validated model for a real spacecraft or mission.
+This is an educational model, not a flight-ready tool. The example values are illustrative, and the calculations leave out several real mission effects.
 
-## What it can do right now
+## What you can try
 
-- **Estimate power and energy use:** enter subsystems, their power ratings, and how long they operate.
-- **Estimate solar-array output:** use cell area, sunlight intensity, conversion efficiency, and an assumed degradation factor.
-- **Track battery state of charge:** estimate how charging energy and energy use affect the battery's state of charge.
-- **Explore the results:** the Streamlit dashboard includes energy-balance charts and a CSV download.
-- **Run tests:** unit tests check the calculation functions, with GitHub Actions running the test suite.
+- **Build a power budget:** add subsystems, enter their power ratings and operating times, and estimate their energy use.
+- **Estimate solar power:** change the active cell area, sunlight intensity, efficiency, and assumed degradation.
+- **Follow battery charge:** see how charging energy and energy consumption affect the estimated state of charge.
+- **Explore the results:** use the dashboard charts and export a CSV summary.
+- **Run the tests:** the calculation functions have unit tests, and GitHub Actions runs the test suite.
 
-## Project layout
+## Project structure
 
 ```text
 .
@@ -33,34 +33,38 @@ The project is an educational calculator for CubeSat-style electrical power syst
 
 ## Getting started
 
-You'll need Python 3.12 or a compatible recent Python 3 version. The calculation modules and unit tests use only the Python standard library.
+You'll need Python 3.12 or a compatible recent Python 3 version. The calculation modules and tests use only Python's standard library; the dashboard has additional dependencies.
 
-### Open the interactive dashboard
+### Run the dashboard
 
-From the repository root, install the dashboard dependencies and start the app:
+From the repository root, install the dependencies and launch Streamlit:
 
 ```bash
 python -m pip install -r requirements.txt
 python -m streamlit run app.py
 ```
 
-It opens in your browser. You can edit subsystem loads, change solar-array and battery inputs, inspect the energy-balance charts, and download a CSV summary. If you need help setting up Streamlit, see the [official installation guide](https://docs.streamlit.io/get-started/installation).
+The dashboard opens in your browser. From there, you can change subsystem loads, adjust the solar-array and battery inputs, look at the energy-balance charts, and download the results as a CSV file. If you need it, here's the [official Streamlit installation guide](https://docs.streamlit.io/get-started/installation).
 
-### Use the terminal menu
+### Run it in the terminal
 
-You can also run the project without the dashboard:
+If you prefer a command-line interface, start the menu with:
 
 ```bash
 python -m src.main
 ```
 
-The menu has three tools:
+It includes three options:
 
-1. **Power budget:** enter subsystem power consumption and operating time to estimate power and energy use.
-2. **Solar-array estimate:** enter active cell area, irradiance, efficiency, degradation, and sunlight duration.
-3. **Battery state of charge:** enter initial state of charge, capacity, charging energy, energy consumed, and charging efficiency.
+1. **Power budget** — estimate subsystem power and energy use from power ratings and operating times.
+2. **Solar-array estimate** — estimate output from cell area, irradiance, efficiency, degradation, and sunlight duration.
+3. **Battery state of charge** — estimate the effect of initial charge, capacity, charging energy, energy use, and charging efficiency.
 
-The original power-budget-only interface is still available with `python -m src.power_budget`.
+You can also run the original power-budget tool directly:
+
+```bash
+python -m src.power_budget
+```
 
 ### Run the tests
 
@@ -70,48 +74,52 @@ From the repository root:
 python -m unittest discover -s tests -v
 ```
 
-## How the estimates work
+## The calculations behind it
 
-These are deliberately simple first-pass models. The goal is to make the assumptions visible and understand the basic energy balance before adding more realistic spacecraft behavior.
+I kept the first version deliberately simple. The idea is to make the energy balance easy to follow before trying to model the many details of an actual spacecraft.
 
-### Power budget
+### 1. Power budget
 
-For subsystem *i*, estimated energy use is:
+For a subsystem *i*, the estimated energy used is:
 
 `E_i = P_i × t_i`
 
-For all listed subsystems:
+For all subsystems in the budget:
 
 `E_total = Σ(P_i × t_i)`
 
-The total-power function adds the power ratings entered. It represents simultaneous total power only if those subsystems are assumed to be on at the same time.
+The total-power function adds the power ratings you enter. That sum represents the spacecraft's simultaneous power demand only if the listed subsystems are operating at the same time.
 
-### Solar-array output
+### 2. Solar-array output
 
 `P_solar = A × G × η × (1 - d)`
 
-Here, `A` is active cell area in m², `G` is incident irradiance in W/m², `η` is conversion efficiency expressed as a fraction, and `d` is the assumed fractional degradation.
+Where:
+- `A` is the active solar-cell area in m².
+- `G` is the incident irradiance in W/m².
+- `η` is the conversion efficiency, entered as a fraction.
+- `d` is the assumed fractional degradation.
 
-Estimated energy over a sunlight interval is:
+For a given sunlight interval:
 
 `E_solar = P_solar × t_sun`
 
-This estimate doesn't yet account for factors such as cell temperature, incidence angle, shadowing, orbital geometry, or electrical losses beyond the configured degradation factor.
+This is a first estimate. The current model doesn't account for cell temperature, incidence angle, shadowing, orbital geometry, or electrical losses beyond the configured degradation factor.
 
-### Battery state of charge
+### 3. Battery state of charge
 
-The simplified energy bookkeeping is:
+The model uses a simple energy balance:
 
 `E_final = E_initial + η_charge × E_charged - E_used`
 
-The stored energy is limited to the range between zero and nominal capacity before being converted to a state-of-charge percentage. This is a basic accounting model, not an electrochemical simulation or a validated battery-management model.
+Stored energy is kept between zero and the battery's nominal capacity, then converted into a state-of-charge percentage. This is energy bookkeeping—not an electrochemical simulation or a validated battery-management model.
 
-## Limitations and next steps
+## What it doesn't model yet
 
-There's plenty left to improve. The current version doesn't model orbital sunlight and eclipse timelines, spacecraft pointing, temperature effects, detailed battery discharge limits, or converter efficiencies. Those would be useful next steps, along with operating modes and more detailed energy-balance analysis.
+A real spacecraft power system has more going on than these calculations capture. For now, the model doesn't simulate orbital sunlight and eclipse periods, spacecraft pointing, temperature effects, detailed battery discharge limits, or power-converter efficiencies.
 
-For now, the priority is to keep the calculations understandable, test the code, and be clear about what the model can—and can't—tell us.
+Those are possible directions for future improvements, along with operating modes and a more detailed energy-balance analysis. I want to build those features gradually and make sure I understand the assumptions behind them rather than add complexity just for the sake of it.
 
-## Status
+## Project status
 
-This project is a work in progress. I'm using it to connect what I learn in aerospace engineering with programming, and to build up the model step by step as I learn more.
+This is a work in progress. I'm building it alongside my Aerospace Engineering studies at the National University of Engineering (UNI) in Peru, using it to practise Python and explore the kind of power-system questions that come up in spacecraft design.
